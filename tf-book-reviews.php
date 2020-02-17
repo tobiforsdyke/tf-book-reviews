@@ -23,10 +23,10 @@ class TF_Book_Reviews {
 
   private function __construct() {
     // implement hooks here
-    add_action( 'init', array($this, 'register_post_type'));
+    add_action( 'init', 'TF_Book_Reviews::register_post_type' );
   }
 
-  function register_post_type() {
+  static function register_post_type() {
     register_post_type( 'tf_book_review', array(
       'labels'  =>  array(
         'name'  =>  __('Book Reviews'),
@@ -37,8 +37,17 @@ class TF_Book_Reviews {
         'title', 'editor', 'excerpt', 'author', 'revisions', 'thumbnail', 'custom-fields'
       ),
       'public'  =>  TRUE,
+      'menu_icon' =>  'dashicons-book-alt',
     ));
+  }
+
+  static function activate() {
+    self::register_post_type();
+    flush_rewrite_rules();
   }
 }
 
 TF_Book_Reviews::getInstance();
+
+register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
+register_activation_hook( __FILE__, 'TF_Book_Reviews::activate' );

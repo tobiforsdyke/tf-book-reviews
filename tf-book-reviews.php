@@ -30,7 +30,7 @@ class TF_Book_Reviews {
     register_post_type( 'tf_book_review', array(
       'labels'  =>  array(
         'name'  =>  __('Book Reviews'),
-        'singular_name' =>  __('Movie Review'),
+        'singular_name' =>  __('Book Review'),
       ),
       'description' =>  __('Opinionated book reviews'),
       'supports'  =>  array(

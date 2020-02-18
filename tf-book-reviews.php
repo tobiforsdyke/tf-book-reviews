@@ -42,6 +42,9 @@ class TF_Book_Reviews {
 		add_action( 'tgmpa_register', array( $this, 'check_required_plugins' ) );
 		// then define the fields
 		add_filter( 'rwmb_meta_boxes', array( $this, 'metabox_custom_fields' ) );
+		// Add custom template and stylesheet
+		add_action( 'template_include', array( $this, 'add_cpt_template' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'add_styles_scripts' ) );
 	}
 
 	/**
@@ -210,6 +213,27 @@ class TF_Book_Reviews {
 		);
 
 		return $meta_boxes;
+	}
+
+	/**
+	 * Template include to add a custom template
+	 */
+	function add_cpt_template( $template ) {
+		if (is_singular( self::CPT_SLUG )) {
+			// Check active theme directory for a version of the template
+			if (file_exists( get_stylesheet_directory() . '/single-' . self::CPT_SLUG . '.php' )) {
+				return get_stylesheet_directory() . '/single-' . self::CPT_SLUG . '.php';
+			}
+			// Else, use the bundled copy
+			return plugin_dir_path(__FILE__) . 'single-' . self::CPT_SLUG . '.php';
+		}
+		return $template;
+	}
+	/**
+	 * Enqueues the stylesheet for the book review post type
+	 */
+	function add_styles_scripts() {
+		wp_enqueue_style( 'book-review-style', plugin_dir_url( __FILE__ ) . 'book-reviews.css' );
 	}
 }
 

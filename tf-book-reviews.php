@@ -13,6 +13,9 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 // required plugin class
 require_once dirname( __FILE__ ) . '/lib/class-tgm-plugin-activation.php';
 
+// register the widgets
+require_once dirname( __FILE__ ) . '/widgets.class.php';
+
 class TF_Book_Reviews {
 	private static $instance;
 
@@ -36,6 +39,9 @@ class TF_Book_Reviews {
 		add_action('init', 'TF_Book_Reviews::register_post_type' );
 		// initialize custom taxonomies
 		add_action('init', 'TF_Book_Reviews::register_taxonomies' );
+
+		// register custom widgets
+		add_action( 'widgets_init', array( $this, 'register_widgets' ) );
 
 		// initialize custom fields from Metabox.io:
 		// first check for required plugin
@@ -88,6 +94,13 @@ class TF_Book_Reviews {
 					'slug' => 'book-genres',
 				),
 			));
+		}
+
+		/**
+		 * Registers custom widgets for the plugin
+		 */
+		function register_widgets() {
+			register_widget( 'TFBR_Widget_Recent_Reviews' );
 		}
 
 	/**
@@ -200,12 +213,12 @@ class TF_Book_Reviews {
 					'type'    => 'select',
 					'options' => array(
 						'' => __('TBR (To be rated)'),
-            0  => __('0 - Gave up, did not finish!'),
-						1  => __('1 - Hated it!'),
-						2  => __('2 - Finished it but did not enjoy it'),
+            0  => __('0 - Gave up, didn&#8217;t finish!'),
+						1  => __('1 - Hated it but struggled through!'),
+						2  => __('2 - Finished it but didn&#8217;t really enjoy it'),
 						3  => __('3 - Not bad. Somewhat enjoyed it'),
 						4  => __('4 - Really enjoyed it'),
-						5  => __('5 - Loved it! Would read it again'),
+						5  => __('5 - Loved it and can&#8217;t wait to read it again!'),
 					),
 					'std' => '',
 				),

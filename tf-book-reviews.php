@@ -17,6 +17,7 @@ class TF_Book_Reviews {
 	private static $instance;
 
 	const FIELD_PREFIX = 'tfbr_';
+	const CPT_SLUG = 'book_review';
 
 	// this needs to be hard-coded, but this serves as a reminder,
 	// and a find replace when searching and replacing
@@ -33,6 +34,8 @@ class TF_Book_Reviews {
 	private function __construct() {
 		// initialize Book Review custom post type
 		add_action('init', 'TF_Book_Reviews::register_post_type' );
+		// initialize custom taxonomies
+		add_action('init', 'TF_Book_Reviews::register_taxonomies' );
 
 		// initialize custom fields from Metabox.io:
 		// first check for required plugin
@@ -47,7 +50,7 @@ class TF_Book_Reviews {
 	 * Defined statically for use in activation hook
 	 */
 	public static function register_post_type() {
-		register_post_type('book_review', array(
+		register_post_type(self::CPT_SLUG, array(
 			'labels' => array(
 				'name' => __('Book Reviews'),
 				'singular_name' => __('Book Review'),
@@ -61,11 +64,35 @@ class TF_Book_Reviews {
 		));
 	}
 
+		/**
+		 * Registers the taxonomies
+		 */
+		public static function register_taxonomies() {
+			register_taxonomy('book_types', array( self::CPT_SLUG ), array(
+				'labels' => array(
+					'name' => __('Genres'),
+					'singular_name' => __('Genre'),
+					'all_items' => __( 'All Genres' ),
+					'edit_item' => __( 'Edit Genre' ),
+					'view_item' => __( 'View Genre' ),
+					'update_item' => __( 'Update Genre' ),
+					'add_new_item' => __( 'Add New Genre' ),
+					'new_item_name' => __( 'New Genre' ),
+				),
+				'public' => TRUE,
+				'hierarchical' => TRUE,
+				'rewrite' => array(
+					'slug' => 'book-genres',
+				),
+			));
+		}
+
 	/**
 	 * Activation hook (see register_activation_hook)
 	 */
 	public static function activate() {
 		self::register_post_type();
+		self::register_taxonomies();
 		flush_rewrite_rules();
 	}
 
@@ -126,7 +153,7 @@ class TF_Book_Reviews {
 		$meta_boxes[] = array(
 			'id'       => 'book_data',
 			'title'    => 'Additional Information',
-			'pages'    => array( 'book_review' ),
+			'pages'    => array( self::CPT_SLUG ),
 			'context'  => 'normal',
 			'priority' => 'high',
 			'fields' => array(
@@ -159,7 +186,7 @@ class TF_Book_Reviews {
 		$meta_boxes[] = array(
 			'id'       => 'review_data',
 			'title'    => 'Review',
-			'pages'    => array( 'book_review' ),
+			'pages'    => array( self::CPT_SLUG ),
 			'context'  => 'side',
 			'priority' => 'high',
 			'fields' => array(
